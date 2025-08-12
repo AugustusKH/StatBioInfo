@@ -125,7 +125,6 @@ write.table(final_table,file="myresult.txt",sep="\t")
     
 3. Simulate a situation of randomly picked two positive integers and the calculate the probability that both integers are even numbers.
 
-
 ```{r}
 test <- function(){
   n <- seq(1:1000)

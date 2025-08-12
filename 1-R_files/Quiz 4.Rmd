@@ -1,0 +1,81 @@
+---
+title: "Quiz 4"
+author: "Pakorn Sagulkoo 6380064520"
+date: "11/11/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quiz 4
+
+1. Use the Bayesian inference to find the average of height of Thai people with the ages of 20-25 years old. Firstly, we had a belief that Thai people are short, then assumed that the height of Thai people with these ages normally distributed with the mean of 155 cm and variation around 5 cm. However, the days passed, new generations
+of the Thai people seemed to be getting higher. We then collected 3 groups of 50 people under these ages from three provinces of Thailand and the results were as follows.
+ Group 1: the average height was 162 with the deviation of 6.
+ Group 2: the average height was 158 with the deviation of 3.
+ Group 3: the average height was 165 with the deviation of 4.
+What would we expect for the height of Thai people with the ages of 20-25 years old in the present? 
+
+```{r}
+rangeP <- seq(120,190,1)
+plot(rangeP, dnorm(rangeP,155,5),type = "l",xlab = "Height(cm.)", ylab = "Density")
+text(145,0.06,labels="Prior")
+post <- 0.5*dnorm(rangeP,162,6) + 0.5*dnorm(rangeP,158,3) + 0.5*dnorm(rangeP,165,4)
+lines(rangeP,post,col="blue")
+text(172,0.06,labels="Post",col="blue")
+```
+
+  The expected height is 160 cm.
+  
+2. Given a transition matrix for CpG Islands, 
+  2.1. Calculate a stationary distribution and interpret the result. 
+  
+```{r}
+gr <- matrix(c(0.180,0.274,0.426,0.120,0.170,0.368,0.274,0.188,0.161,0.339,0.375,0.125,0.079,0.355,0.384,0.182),nrow=4,byrow = TRUE)
+n_base <- c('A','C','G','T')
+name <- list(n_base,n_base)
+dimnames(gr) <- name
+gr
+gr2 <- gr%*%gr
+gr2
+gr4 <- gr2%*%gr2
+gr4
+gr8 <- gr4%*%gr4
+gr8
+gr16 <- gr8%*%gr8
+gr16
+gr32 <- gr16%*%gr16
+gr32
+gr64 <- gr32%*%gr32
+gr64
+gr128 <- gr64%*%gr64
+gr128
+gr256 <- gr128%*%gr128
+gr256
+gr512 <- gr256%*%gr256
+gr512
+gr1024 <- gr512%*%gr512
+gr1024
+```
+  The stationary distribution of nucleotide is 0.154332, 0.3413399, 0.3497865, and 0.1545416 for A,C,G, and T respectively. 
+  
+  2.2. Use this distribution to calculate expected numbers of each nucleotide in a sample of 4500 nucleotides.
+  
+```{r}
+prob_a <- 4500 * 0.154332
+prob_c <- 4500 * 0.3413399
+prob_g <- 4500 * 0.3497865
+prob_t <- 4500 * 0.1545416
+prob_a
+prob_c
+prob_g
+prob_t
+```
+  
+  A has 694 bases
+  C has 1536 bases
+  G has 1574 bases
+  T has 695 bases
+  

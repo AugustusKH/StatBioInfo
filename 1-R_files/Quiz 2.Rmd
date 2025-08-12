@@ -1,0 +1,57 @@
+---
+title: "Quiz 2"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quiz 2
+
+1. Compute the following probabilities.
+  1.1 P(X = 24), for X binomially distributed with n = 40 and p = 0.3
+
+```{r}
+dbinom(24,40,0.3)
+```
+  1.2 P(-1.72 < Z < 0), for Z standard normally distributed. 
+  
+```{r}
+pnorm(0) - pnorm(-1.72)
+```
+2. Generate 100 random numbers (or samples) that follow binomial distribution with n = 30 and p = 0.15
+
+```{r}
+rbinom(100,30,0.15)
+```
+3. 3. A certain genetic model predicts that four phenotypes occur in ration 8:2:4:2. In a
+certain experiment the offspring is observed with frequencies 810, 220, 390, 190. Do the data confirm the model? 
+
+```{r}
+theoretical <- c(8,2,4,2)
+sum_theo <- sum(theoretical)
+Px <- theoretical/sum_theo
+chisq.test(c(810,220,390,190), p = Px)
+```
+  Because the p-value is more than 0.05, it means that the frequency ratio from theory and experiment is not significantly different. The data is according to the model.
+  
+4. Use the gene expression data of bacteria in aerobic and anaerobic nutrient conditions (“mygenes.txt”) and select the genes with smallest two-sample t-test values for which the expression mean under aerobic condition is greater than that under anaerobic condition. Report the names, the difference of means and p-values for the best five as a table into a file (namely “my_siggenes.txt”). 
+
+```{r}
+file_read <- read.table("C:/Users/hp/Desktop/Bioinfor MSc/Stat for Bioinfo/mygenes.txt", header= TRUE, fileEncoding="UCS-2LE")
+gene_value <- file_read[,2:7]
+gene_name <- file_read[,1]
+gene.fac <- factor(c(0,0,0,1,1,1), 0:1, labels = c("Aerobes","Anaerobes"))
+
+p_value <-apply(gene_value, 1, function(x) t.test(x~gene.fac, var.equal = FALSE, alternative="greater")$p.value)
+
+diff_mean <- apply(gene_value, 1, function(x) t.test(x~gene.fac, var.equal = FALSE, alternative="greater")$estimate)
+
+sum_diff <- diff_mean[1,]-diff_mean[2,]
+o <- order(p_value , decreasing = FALSE)
+
+sum_table <- cbind(gene_name,p_value,sum_diff)
+last <- sum_table[o[1:5],]
+write.table(last,"my_siggenes.txt")
+```

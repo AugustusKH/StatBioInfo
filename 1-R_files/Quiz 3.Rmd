@@ -1,0 +1,58 @@
+---
+title: "Quiz 3"
+author: "Pakorn Sagulkoo 6380064520"
+date: "6/11/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quiz 3
+
+Calculate the following problems by using R programming 
+
+Given the following data of counting the number of eggs each hen was carrying, its
+height and its weight in the table below. 
+
+  1. Plot the graph to see the relationship of height and weight to the number of eggs. 
+  
+```{r}
+height <- c(42,53,48,50,52,55,49)
+weight <- c(5.8,7.3,6.2,4.5,9.1,8.6,6.3)
+eggs <- c(28,24,22,21,26,25,16)
+par(mfrow=c(1,2))
+plot(height,eggs,xlab="Height(cm)",ylab="Eggs")
+abline(lm(eggs ~ height),col="red")
+plot(weight,eggs,xlab="Weight(kg)",ylab="Eggs")
+abline(lm(eggs ~ weight),col="blue")
+```
+  
+  2. Model the relationship of height and weight to the number of eggs with linear
+regression. What are the coefficients? How good is the model to explain the relationship? Which attribute is significantly related to the number of eggs? 
+
+```{r}
+summary(lm(eggs ~ height + weight))
+```
+  The coefficients of height and weight are -0.5197 and 1.7593 respectively. The model is not fit because the R-squared is low. Moreover, the relationship between height and weight to eggs is not statistical significant because the p-value is more than 0.05 (0.4299).
+  
+  3. Use the PCA to calculate the principal components of this data. How much does
+the total variance of each component explain the data? 
+
+```{r}
+pca <- prcomp(cbind(height,weight), center = TRUE, scale. = TRUE)
+print(pca)
+summary(pca)
+```
+  The first component variance is 0.8033 and the second component variance is 0.1967. It can conclude that the data in PC2 is higher value range than PC1.  
+
+  4. According to item 3, if we use only first principal component to fit a linear model to predict the number of eggs. How good is the model in comparison to the
+linear model in item 2? 
+
+```{r}
+data_pca <- cbind(pca$x[,1],height,weight,eggs)
+fi_data <- data.frame(data_pca)
+summary(lm(eggs ~ data_pca[,1],data=fi_data))
+```
+  Because the R-sqaured is close to 0 (0.02) and the p-value is more than 0.05 (0.75), the model is not good at linear relationship
