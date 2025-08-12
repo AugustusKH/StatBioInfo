@@ -1,0 +1,263 @@
+---
+title: "Cognitive Behavioural and Family Treatment on Weight Changes in Anorexia nervosa"
+author: "Pakorn Sagulkoo 6380064520"
+date: "19/11/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Content
+
+Part 1: Introduction
+Part 2: Data Analysis by R
+Part 3: Regression analysis by R
+Part 4: Conclusion and discussion
+
+Part 1: Introduction
+What is Anorexia nervosa?
+  Anorexia nervosa is a serious psychiatric eating disorder which usually occurs in adolescent and adult female patients. The clinical features of AN patients are severe weight loss, malnutrition, amenorrhea, and electrolyte and acid-base imbalance. Weight loss is taken place primarily by diminished food intake caused by a fear of overweight perception. The main treatments of AN are psychiatrically pharmacological treatment and supportive care. However, There is a poor prognosis in AN patients. AN patients usually deny eating that causes severe malnutrition and end up with death from severe electrolyte and acid-base disturbance. 
+  From this study, it is a randomized control trial to AN patients by separating patients into 3 groups. The first group is control patients which is treated by conventional medication. The second and third group have conventional treatment combined with alternative treatments which are cognitive behavioural therapy (CBT) and family therapy (FT) respectively. The sample of each groups are 30 patients. Patients in each groups are measure the weight before and after treatment in kilogram unit. The duration of treatment is 30 days
+  
+Part 2: Data Analysis by R
+  1. Import dataframe from pivot table in Excel
+      
+```{r}
+data_AN <- read.csv("D:\\Bioinfor MSc\\Stat for Bioinfo\\Project\\Pivot table\\Anorexia.csv")
+attach(data_AN)
+head(data_AN)
+```
+  2. General summary of dataframe
+      Every patients is measure height, age, pre-treatment and post-treatment weight, and weight difference, then we will summarize the dataframe.
+      
+```{r}
+summary(data_AN)
+```
+    
+  3. Test randomization
+      Every patients should be grouped randomly. Then I look the boxplot of age in each groups.
+      
+```{r}
+names(data_AN)
+```
+      
+```{r}
+plot(factor(Treat),Age,xlab="Treatment",ylab="Age (year)", main="Boxplot of Age",ylim=c(10,40))
+```
+
+  The boxplot indicates that there are no differences in height in three groups. I use one-way ANOVA to confirm the result.
+  
+```{r}
+summary(aov(Age~Treat))
+```
+  
+  Because the p-value is more than 0.05, there are no differences in the mean of age in 3 groups.  
+
+  I confirm the randomization again by height approach.
+  
+```{r}
+plot(factor(Treat),Height,xlab="Treatment",ylab="Height (cm.)", main="Boxplot of Height",ylim=c(138,182))
+```
+  
+```{r}
+summary(aov(Height~Treat))
+```
+
+  The p-value of ANOVA of height is also more than 0.05. It can be concluded that the patients are randomly grouped.
+  
+  4. Test normality
+      4.1 Control group
+          I show the histogram and boxplot of the weight difference in control group
+      
+```{r}
+data_ctrl <- data_AN[1:30,6]
+summary(data_ctrl)
+```
+      
+```{r}
+par(mfrow=c(1,2))
+hist(data_ctrl,breaks=(-6:8),xlab="weight difference (kg.)",main="Histogram of control")
+boxplot(data_ctrl,ylab="weight difference (kg.)",main="Boxplot of control")
+```
+          The histogram of control looks like normal distribution. It is tested by QQ plot.
+          
+```{r}
+qqnorm(data_ctrl,main="Normal QQ plot of Control")
+qqline(data_ctrl)
+```
+          The QQ plot also looks like a normal distribution. It is confirmed by two statistical tests (Shapiro-Wilk and Anderson test).
+          
+```{r}
+shapiro.test(data_ctrl)
+```
+          
+```{r}
+library(nortest)
+ad.test(data_ctrl)
+```
+          There are no statistical significance in both normality test. It can conclude that the data of the weight change in control is normal distribution.
+      4.2 CBT group
+      
+```{r}
+data_cbt <- data_AN[31:60,6]
+summary(data_cbt)
+```
+      
+```{r}
+par(mfrow=c(1,2))
+hist(data_cbt,breaks=(-4.5:10),xlab="weight difference (kg.)",main="Histogram of CBT")
+boxplot(data_cbt,ylab="weight difference (kg.)",main="Boxplot of CBT")
+```
+          The histogram of CBT is not normal distribution (right skewed pattern). The boxplot shows one upper outlier. The outlier cannot be deleted because the weight before and after treatment are measured accurately.
+          
+```{r}
+qqnorm(data_cbt,main="Normal QQ plot of CBT")
+qqline(data_cbt)
+```
+          
+```{r}
+shapiro.test(data_cbt)
+```
+          
+```{r}
+ad.test(data_cbt)
+```
+          There are statistical significance in both normality test. The QQ plot and both normality tests give the information that the weight change in CBT group is not normal distribution.
+      4.3 FT group
+      
+```{r}
+data_ft <- data_AN[61:90,6]
+summary(data_ft)
+```
+      
+```{r}
+par(mfrow=c(1,2))
+hist(data_ft,breaks=(-3:15.5),xlab="weight difference (kg.)",main="Histogram of FT")
+boxplot(data_ft,ylab="weight difference (kg.)",main="Boxplot of FT")
+```
+          The histogram of FT is normal distribution when exclude the outlier on the right. The boxplot shows one upper outlier. Nevertheless, the outlier cannot be deleted because the weight before and after treatment are measured accurately.
+          
+```{r}
+qqnorm(data_ft,main="Normal QQ plot of FT")
+qqline(data_ft)
+```
+          
+```{r}
+shapiro.test(data_ft)
+```
+          
+```{r}
+ad.test(data_ft)
+```
+          The QQ plot and both normality tests provide the information that the weight change in FT group is not normal distribution.           
+  5. Statistical analysis
+      Because the data of weight difference of three groups are not normal distribution, the ANOVA cannot be used. Kruskal-Willis test, the non parametric test, should be used.
+      
+```{r}
+plot(factor(Treat),Wt.diff,xlab="Treatment",ylab="weight change (kg.)", main="Boxplot of Weight change",ylim=c(-6,16))
+```
+      
+```{r}
+kruskal.test(Wt.diff ~ Treat, data = data_AN)
+```
+      The test shows a statistical significance in experiments. Then, pairwise-comparison is performed.
+      
+```{r}
+pairwise.wilcox.test(Wt.diff,Treat,p.adj= "BH")
+```
+      The pairwise-comparison test give the information that Family treatment has an impact on weight changes more than control group in AN patients in statistically significant level. However, there are no statistically significant changes in the weight between cognitive behavioural therapy and control group.
+      
+Part 3: Regression analysis by R
+      In this part, I analyse the relationship between weight changes, and age and height in each group. There are patients but not normal people and each group of patients have received the effect of the treatment: control, CBT, and FT. This means that each of the factors that we treat to the patients may have an impact on the relationship between the weight changes and age and height. For example, in the patients which are family treatment (ft), the effect of responsive treatment may depend on the age. Patients in adolescence usually live and are dependent with the family more than adults. The former may change the weight more than the later. This is my reason to use the regression in this data.
+      
+  1. Control group
+      
+```{r}
+df_ctrl <- data_AN[1:30,]
+plot(df_ctrl$Wt.diff ~ df_ctrl$Age,xlab="Age (year)",ylab="Weight change (kg.)",ylim=range(-10:10))
+abline(lm(df_ctrl$Wt.diff ~ df_ctrl$Age),col="red")
+```
+  
+```{r}
+summary(lm(df_ctrl$Wt.diff ~ df_ctrl$Age))
+```
+    Because R-squared is close to 0 (0.12), the linear model is not fit to the data between weight change and age in control group. 
+      
+```{r}
+plot(df_ctrl$Wt.diff ~ df_ctrl$Height,xlab="Height (cm.)",ylab="Weight change (kg.)",ylim=range(-10:10))
+abline(lm(df_ctrl$Wt.diff ~ df_ctrl$Height),col="red")
+```
+      
+```{r}
+summary(lm(df_ctrl$Wt.diff ~ df_ctrl$Height))
+```
+      Because R-squared is close to 0, the linear model is not fit to the data between weight change and height in control group. 
+      
+```{r}
+summary(lm(df_ctrl$Wt.diff ~ df_ctrl$Age + df_ctrl$Height))
+```
+      In multiple linear regression (between weight change and age and height), there are weak correlations in the model (r square is 0.14).
+      
+  2. CBT group
+  
+```{r}
+df_cbt <- data_AN[31:60,]
+plot(df_cbt$Wt.diff ~ df_cbt$Age,xlab="Age (year)",ylab="Weight change (kg.)",ylim=range(-7:10))
+abline(lm(df_cbt$Wt.diff ~ df_cbt$Age),col="red")
+```
+  
+```{r}
+summary(lm(df_cbt$Wt.diff ~ df_cbt$Age))
+```
+      Because R-squared is close to 0, the linear model is not fit to the data between weight change and age in CBT group. 
+      
+```{r}
+plot(df_cbt$Wt.diff ~ df_cbt$Height,xlab="Height (cm.)",ylab="Weight change (kg.)",ylim=range(-7:10))
+abline(lm(df_cbt$Wt.diff ~ df_cbt$Height),col="red")
+```
+      
+```{r}
+summary(lm(df_cbt$Wt.diff ~ df_cbt$Height))
+```
+      Because R-squared is close to 0, the linear model is not fit to the data between weight change and height in CBT group.
+      
+```{r}
+summary(lm(df_cbt$Wt.diff ~ df_cbt$Age + df_cbt$Height))
+```
+      In multiple linear regression (between weight change and age and height), there are weak correlations in the model (r square is 0.003).
+      
+  3. FT group
+  
+```{r}
+df_ft <- data_AN[61:90,]
+plot(df_ft$Wt.diff ~ df_ft$Age,xlab="Age (year)",ylab="Weight change (kg.)",ylim=range(-5:12))
+abline(lm(df_ft$Wt.diff ~ df_ft$Age),col="red")
+```
+  
+```{r}
+summary(lm(df_ft$Wt.diff ~ df_ft$Age))
+```
+      Because R-squared is close to 0, the linear model is not fit to the data between weight change and age in FT group.
+      
+```{r}
+plot(df_ft$Wt.diff ~ df_ft$Height,xlab="Height (cm.)",ylab="Weight change (kg.)",ylim=range(-5:10))
+abline(lm(df_ft$Wt.diff ~ df_ft$Height),col="red")
+```
+      
+```{r}
+summary(lm(df_ft$Wt.diff ~ df_ft$Height))
+```
+      Because R-squared is close to 0, the linear model is not fit to the data between weight change and height in FT group.
+      
+```{r}
+summary(lm(df_ft$Wt.diff ~ df_ft$Age + df_ft$Height))
+```
+      In multiple linear regression (between weight change and age and height), there are weak correlations in the model (r square is 0.037).
+      
+Part 4: Discussion and Conclusion
+    1. The patients are grouped randomly into 3 groups (control, CBT, and FT) because the one-way ANOVA of age and height in the groups is not statistically significant.
+    2. The statistical analysis reveals that family treatment give the result of the weight change well than the control but cognitive behavioural therapy does not give the result well than control.
+    3. In linear regression analysis, there are not any strong relationship between weight change, and age and height of patients in 3 groups.
+    
