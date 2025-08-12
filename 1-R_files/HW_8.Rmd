@@ -1,0 +1,75 @@
+---
+title: "Homework 8"
+author: "Pakorn Sagulkoo 6380064520"
+date: "11/11/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise
+
+Balls in a box
+1. We had a red box containing many color balls which we don’t know how many of
+them. However, we believed that picking a ball out of this box, the proportion of
+times that we get a red box is 1/4. Use the Bayesian analysis to estimate the
+probability of getting a red ball out of a black box if we do the experiment and gain
+some knowledge as follows:
+
+Experiment 1 performed 5 trials of picking a ball and returning it into the box,
+we obtained a red ball 2 times.
+Experiment 2 performed 10 trials of picking a ball and returning it into the box,
+we obtained a red ball 3 times.
+Experiment 3 performed 12 trials of picking a ball and returning it into the box,
+we obtained a red ball 5 times.
+Use the Bayesian model to estimate the probability of getting a red ball out of this
+black box.
+
+Use the Bayesian model to estimate the probability of getting a red ball out of this
+black box.
+
+  1.1. Specify your own prior distribution and posterior distributions and plot the prior distribution and all of the posterior distributions in the same graph.
+
+```{r}
+expl <- (0:1000)/1000
+plot(expl, dbeta(expl,2,5),ylim=range(0:6),type="l",main="Prior and Posterior distributions")
+lines(expl,dbeta(expl,4,8),col="red")
+text(0.18,2.8,labels ="Prior")
+text(0.3,3.3,labels="Post1",col="red")
+lines(expl, dbeta(expl,7,15),col="darkgreen")
+text(0.3,4.3,labels="Post2",col="darkgreen")
+lines(expl, dbeta(expl,12,22),col="darkmagenta")
+text(0.35,5.2,labels="Post3",col="darkmagenta")
+```
+
+  1.2. What is the estimated probability of getting a red ball out of this black box?
+  
+```{r}
+which(dbeta(expl,12,22) == max(dbeta(expl,12,22)))/1000
+```
+  2. Male or female
+Suppose that 40 people are randomly picked off a city street in Bangkok. Whether they are male or female is noted on 40 identical pieces of paper, put into a hat and the hat is brought to us. We have not seen these 40 people. We then take out five pieces of paper from the hat and read them - three are female.
+
+Estimate the number of females in the original group of 40 with the Bayesian model. hypo : 50:50 (m:f)
+
+```{r}
+samprop <- seq(0, 1, length.out = 40)
+plot(samprop, dbinom(x=3, prob=samprop, size=5),ylim=range(0:1),
+type="l", xlab="Female prop", ylab="Density")
+text(0.6,0.4,labels="likelihood")
+lines(samprop, dnorm(x=samprop, mean=0.5,sd=0.1)/25,
+col="blue")
+text(0.5,0.2,labels="Prior",col="blue")
+lh <- dbinom(x=3, prob=samprop, size=5)
+pri <- dnorm(x=samprop, mean=0.5, sd=0.1)
+lines(samprop, lh*pri, col="darkorange")
+text(0.74,0.6,labels="Unstdard Post",col="darkorange")
+unstd_post <- lh * pri
+std_post <- unstd_post / sum(unstd_post)
+lines(samprop, std_post, col="deeppink")
+text(0.6,0.15,labels="Post",col="deeppink")
+```
+  The female propability is 0.55. The female number in sampling is 0.55*40=22.
+  

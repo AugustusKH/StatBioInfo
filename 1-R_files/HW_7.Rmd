@@ -1,0 +1,62 @@
+---
+title: "Homework 7"
+author: "Pakorn Sagulkoo 6380064520"
+date: "2/11/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise
+5. Principal Components Analysis on part of the ALL data.
+  (a) Construct an expression set with the patients with B-cell in stage B1, B2, and B3. Compute the corresponding ANOVA p-values of all gene expressions. Construct the expression set with the pvalues smaller than 0.001. Report the dimensionality of the data matrix with gene expressions.
+  
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(ALL); data(ALL)
+```
+  
+```{r}
+class_all <- ALL[,ALL$BT %in% c("B1","B2","B3")]
+p_value <- apply(exprs(class_all), 1, function(x) anova(lm(x ~ class_all$BT))$Pr[1])
+con_p <- class_all[p_value<0.001,]
+dim(exprs(con_p))
+```
+  (b) Are the correlations between the patients positive?
+  
+```{r}
+min(cor(exprs(con_p)))
+```
+    the correlations are positive.
+  
+  (c) Compute the eigenvalues of the correlation matrix. Report the largest five. Are the first three larger than one?
+  
+```{r}
+eigen(cor(exprs(con_p)))$values[1:5]
+```
+    The first three eigenvalues are larger than remainders.
+  
+  (d) Program a bootstrap of the largest five eigenvalues. Report the bootstrap 95% confldence intervals and draw relevant conclusions.
+  
+```{r}
+data <- exprs(con_p)
+p <- ncol(data)
+n <- nrow(data)
+nboot<-1000
+eigenvalues <- array(dim=c(nboot,p))
+for (i in 1:nboot){
+  dat.star <- data[sample(1:n,replace=TRUE),]
+  eigenvalues[i,] <- eigen(cor(dat.star))$values
+  }
+for (j in 1:5) print(quantile(eigenvalues[,j],c(0.025,0.975)))
+```
+    The 95% confidence intervals of thjujj8e largest 5 eigenvalues are likely narrow.  
+  
+  (e) Plot the genes in a plot of the flrst two principal components.
+  
+```{r}
+biplot(princomp(data,cor=TRUE),pc.biplot=T,cex=0.5,expand=0.8)
+```
+  
+  

@@ -1,0 +1,142 @@
+---
+title: "Quiz 1"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Quiz 1
+
+1. Attach to the dataset quakes. Answer the following questions and discuss the result.
+
+```{r}
+data(quakes)
+
+```
+
+  1.1 Use help to look for an information about this dataset and explain it.
+  
+```{r}
+help(quakes)
+```
+  
+Locations of Earthquakes off Fiji
+Description
+The data set give the locations of 1000 seismic events of MB > 4.0. The events occurred in a cube near Fiji since 1964.
+
+Usage
+quakes
+Format
+A data frame with 1000 observations on 5 variables.
+
+[,1]	lat	numeric	Latitude of event
+[,2]	long	numeric	Longitude
+[,3]	depth	numeric	Depth (km)
+[,4]	mag	numeric	Richter Magnitude
+[,5]	stations	numeric	Number of stations reporting
+Details
+There are two clear planes of seismic activity. One is a major plate junction; the other is the Tonga trench off New Zealand. These data constitute a subsample from a larger dataset of containing 5000 observations.
+
+Source
+This is one of the Harvard PRIM-H project data sets. They in turn obtained it from Dr. John Woodhouse, Dept. of Geophysics, Harvard University.
+
+Examples
+require(graphics)
+pairs(quakes, main = "Fiji Earthquakes, N = 1000", cex.main = 1.2, pch = ".")
+
+  1.2 Plot the box plot and the histogram of each variables.
+      1.2.1 data lattitude
+  
+```{r}
+boxplot(quakes[,1], main="Boxplot of lattitude")
+hist(quakes[,1], main="Histogram of lattitude")
+```
+      1.2.2 data longtitude
+    
+```{r}
+boxplot(quakes[,2], main="Boxplot of longtitude")
+hist(quakes[,2], main="Histogram of longtitude")
+```
+      1.2.3 data depth
+      
+```{r}
+boxplot(quakes[,3], main="Boxplot of depth")
+hist(quakes[,3], main="Histogram of depth")
+```
+      1.2.4 data Richter magnitude
+      
+```{r}
+boxplot(quakes[,4], main="Boxplot of Richter magnitude")
+hist(quakes[,4], main="Histogram of Richter magnitude")
+```
+      1.2.4 data Number of stations reporting
+      
+```{r}
+boxplot(quakes[,5], main="Boxplot of number of stations reporting")
+hist(quakes[,5], main="Histogram of number of stations reporting")
+```
+      
+  1.3 Produce a statistical summary of the variables depth and mag.
+  
+```{r}
+summary(quakes[,3])
+summary(quakes[,4])
+```
+  
+2. An experiment on aerobic and anaerobic nutrient conditions had been performed to study
+the expression of genes in bacteria. The expression levels for all 30 genes were collected in the file “mygenes.txt”. Perform the following analysis.
+  2.1 Read the file “mygenes.txt” into a variable mygenes
+  
+```{r}
+file_read <- read.table("C:/Users/hp/Desktop/Bioinfor MSc/Stat for Bioinfo/mygenes.txt", header= TRUE, fileEncoding="UCS-2LE")
+```
+  
+  2.3 Computations on gene means of this data.
+    (a) Find the three genes with the largest mean expression value for the Aerobic condition and those for the Anaerobic condition. Compare and discuss the results.
+    
+```{r}
+aero_data <- file_read[,c(2:4)]
+aero_mean <- apply(aero_data,1,mean)
+order_aero <- order(aero_mean, decreasing = TRUE)
+top3_aero <- file_read[order_aero[1:3],1]
+top3_aero
+```
+```{r}
+anaero_data <- file_read[,c(5:7)]
+anaero_mean <- apply(anaero_data,1,mean)
+order_anaero <- order(anaero_mean, decreasing = TRUE)
+top3_anaero <- file_read[order_anaero[1:3],1]
+top3_anaero
+```
+    The top 3 highest mean of gene expression in aerobes are G15, G1, and G6 respectively. By contast, The top 3 highest mean of gene expression in anaerobes are G5, G22, and G30 respectively.
+    (b) Create a table of genes consisting of gene ids, means and standard deviations of the expression values. This table should be ordered in decreasing order of the mean expression values. Then, write the table into a file named “myresult.txt” with tab separable.
+    
+```{r}
+bact_mean <- apply(file_read[,c(2:7)],1,mean)
+bact_sd <- apply(file_read[,c(2:7)],1,sd)
+first_bind <- cbind(bact_mean,bact_sd)
+second_bind <- cbind(file_read[,1],first_bind)
+mean_order <- order(second_bind[,2], decreasing = TRUE)
+final_table <- second_bind[mean_order[1:30],]
+write.table(final_table,file="myresult.txt",sep="\t")
+```
+    
+3. Simulate a situation of randomly picked two positive integers and the calculate the probability that both integers are even numbers.
+
+
+```{r}
+test <- function(){
+  n <- seq(1:1000)
+  sam <- sample(n,2)
+  compare <- (sam%%2==0)
+  fin_com <- (compare[1]==TRUE && compare[2]==TRUE)
+  fin_com}
+
+B <- 10000
+events <- replicate(B,test())
+tab <- table(events)
+prop.table(tab)
+```
+

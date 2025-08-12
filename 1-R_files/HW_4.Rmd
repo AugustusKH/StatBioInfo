@@ -1,0 +1,289 @@
+---
+title: "Important Distributions"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise
+
+1. Binomial Let X be binomially distributed with n = 60 and p = 0.4. Compute the following.
+  (a) P (X = 24), P (X <= 24), and P (X >= 30).
+  
+```{r}
+dbinom(24,60,0.4)
+pbinom(24,60,0.4)
+1-pbinom(29,60,0.4)
+```
+  (b) P (20 <= X <= 30), P (20 <= X).
+  
+```{r}
+pbinom(30,60,0.4)-pbinom(19,60,0.4)
+1-pbinom(19,60,0.4)
+```
+  (c) P (20 <= X or X >= 40), and P (20 <= X and X >= 10).
+  
+```{r}
+1-pbinom(19,60,0.4)
+1-pbinom(19,60,0.4)
+```
+  (d) Compute the mean and standard deviation of X.
+  
+```{r}
+avr = 60 * 0.4
+avr
+variance = 60*(1-0.4)*0.4
+stand = sqrt(variance)
+stand
+```
+  (e) The quantiles x=0.025, x=0.5, and x=0.975.
+  
+```{r}
+qbinom(0.025, 60, 0.4)
+qbinom(0.5, 60, 0.4)
+qbinom(0.975, 60, 0.4)
+```
+2. Standard Normal. Compute the following probabilities and quantiles.
+  (a) P (1.6 < Z < 2.3).
+  
+```{r}
+pnorm(2.3)-pnorm(1.6)
+```
+  (b) P (Z < 1.64)
+  
+```{r}
+pnorm(1.64)
+```
+  (c) P (-1.64 < Z < -1.02).
+  
+```{r}
+pnorm(-1.02) - pnorm(-1.64)
+```
+  (d) P (0 < Z < 1.96).
+  
+```{r}
+pnorm(1.96)-0.5
+```
+  (e) P (-1.96 < Z < 1.96).
+  
+```{r}
+pnorm(1.96) - pnorm(-1.96)
+```
+  (f) The quantiles z0.025, z0.05, z0.5, z0.95, and z0.975.
+  
+```{r}
+qnorm(0.025)
+qnorm(0.05)
+qnorm(0.5)
+qnorm(0.95)
+qnorm(0.975)
+```
+3. Normal. Compute for X distributed as N(10; 2) the following probabilities and quantiles.
+  (a) P(X < 12).
+  
+```{r}
+pnorm(12,10,2)
+```
+  (b) P(X > 8)
+  
+```{r}
+1 - pnorm(8,10,2)
+```
+  (c) P(9 < X < 10.5).
+  
+```{r}
+pnorm(10.5,10,2) - pnorm(9,10,2)
+```
+  (d) The quantiles x0.025, x0.5, and x0.975.
+  
+```{r}
+qnorm(0.025,10,2)
+qnorm(0.5,10,2)
+qnorm(0.975,10,2)
+```
+4. T-distribution. Verify the following computations for the T6 distribution.
+  (a) P(T6 < 1).
+  
+```{r}
+pt(1,6)
+```
+  (b) P(T6 > 2).
+  
+```{r}
+1 - pt(2,6)
+```
+  (c) P(-1 < T6 < 1).
+  
+```{r}
+pt(1,6) - pt(-1,6)
+```
+  (d) P(-2 < T6 < 2).
+  
+```{r}
+pt(2,6) - pt(-2,6)
+```
+  (e) The quantiles t0.025, t0.5, and t0.975.
+  
+```{r}
+qt(0.025,6)
+qt(0.5,6)
+qt(0.975,6)
+```
+5. F distribution. Compute the following probabilities and quantiles for the F8,5 distribution.
+  (a) P(F8,5 < 3).
+  
+```{r}
+pf(3,8,5)
+```
+  (b) P(F8,5 > 4).
+  
+```{r}
+1 - pf(4,8,5)
+```
+  (c) P(1 < F8,5 < 6).
+  
+```{r}
+pf(6,8,5) - pf(1,8,5)
+```
+  (d) The quantiles f0.025, f0.5, and f0.975.
+  
+```{r}
+qf(0.025,8,5)
+qf(0.5,8,5)
+qf(0.975,8,5)
+```
+6. Chi-squared distribution. Compute the following for the chi-squared distribution with 10 degrees of freedom.
+  (a) P((x10)^2 < 3).
+  
+```{r}
+pchisq(3,10)
+```
+  (b) P((x10)^2 > 4).
+  
+```{r}
+1 - pchisq(4,10)
+```
+  (c) P(1 < (x10)^2 < 6).
+  
+```{r}
+pchisq(6,10) - pchisq(1,10)
+```
+  (d) The quantiles g0.025, g0.5, and g0.975.
+  
+```{r}
+qchisq(0.025,10)
+qchisq(0.5,10)
+qchisq(0.975,10)
+```
+7. MicroRNA. Suppose that for certain microRNA of size 20 the probability of a purine is binomially distributed with probability 0.7.
+  (a) What is the probability of 14 purines?
+  
+```{r}
+dbinom(14,20,0.7)
+```
+  (b) What is the probability of less than or equal to 14 purines?
+  
+```{r}
+pbinom(14,20,0.7)
+```
+  (c) What is the probability of strictly more than 10 purines?
+  
+```{r}
+sum(dbinom(11:20,20,0.7))
+```
+  (d) By what probability is of the number of purines between 10 and 15?
+  
+```{r}
+pbinom(15,20,0.7) - pbinom(9,20,0.7)
+sum(dbinom(10:15,20,0.7))
+```
+  (e) How many purines do you expect? In other words: What is the mean of the distribution?
+  
+```{r}
+avr2 = 20 * 0.7
+avr2
+```
+  (f) What is the standard deviation of the distribution?
+  
+```{r}
+variance2 = 20 * 0.7 * (1-0.7)
+stand2 = sqrt(variance2)
+stand2
+```
+8. Zyxin. The distribution of the expression values of the ALL patients on the Zyxin gene are distributed according to N(1.6, (0.4)^2.
+  (a) Compute the probability that the expression values are smaller than 1.2?
+  
+```{r}
+pnorm(1.2,1.6,0.4)
+```
+  (b) What is the probability that the expression values are between 1.2 and 2.0?
+  
+```{r}
+pnorm(2,1.6,0.4) - pnorm(1.2,1.6,0.4)
+```
+  (c) What is the probability that the expression values are between 0.8 and 2.4?
+  
+```{r}
+pnorm(2.4,1.6,0.4) - pnorm(0.8,1.6,0.4)
+```
+  (d) Compute the exact values for the quantiles x0.025 and x0.975.
+  
+```{r}
+qnorm(0.025,1.6,0.4)
+qnorm(0.975,1.6,0.4)
+```
+  (e) Use rnorm to draw a sample of size 1000 from the population and compare the sample mean and standard deviation with that of the population.
+  
+```{r}
+a <- rnorm(1000,1.6,0.4)
+mean(a)
+sd(a)
+```
+  the sample's mean and sd from rnorm are nearly equal to the population.
+  
+9. Some computations on Golub et al. (1999) data.
+  (a) Take u = 0 and compute the t-values for the ALL gene expression values. Find the three genes with largest absolute t-values.
+  
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(multtest)
+data(golub)
+gol.fac <- factor(golub.cl, levels=0:1, labels = c("ALL","AML"))
+```
+  
+```{r}
+n = ncol(golub[,gol.fac == "ALL"])
+t_value <- apply(golub[,gol.fac=="ALL"],1,function(x) sqrt(n) * mean(x)/sd(x))
+o <- order(t_value, decreasing=TRUE)
+t_value[o[1:3]]
+golub.gnames[o[1:3],2]
+```
+  (b) Compute per gene the ratio of the variances for the ALL and the AML patients. How many are between 0.5 and 1.5?
+  
+```{r}
+all_var <- apply(golub[,gol.fac=="ALL"],1, var)
+aml_var <- apply(golub[,gol.fac=="AML"],1, var)
+ratio_both <- all_var/aml_var
+sum( ratio_both > 0.5 & ratio_both < 1.5)
+```
+  There are 1410 ratio of variance between 0.5 and 1.5.
+  
+10. Extreme value investigation. This (di–cult!) question aims to teach the essence of an extreme value distribution! An interesting extreme value distribution is given by Pevsner (2003, p.103). Take the maximum of a sample (with size 1000) from the standard normal distribution and repeat this 1000 times. So that you sampled 1000 maxima. Next, subtract from these maxima an and divide by bn, where
+  
+  an <- sqrt(2*log(n)) - 0.5*(log(log(n))+log(4*pi))*(2*log(n))^(-1/2)
+  bn <- (2*log(n))^(-1/2)
+
+Now plot the density from the normalized maxima and add the extreme value function f(x) from Pevsner his book, and add the density (dnorm) from the normal distribution. What do you observe?
+
+```{r}
+an <- sqrt(2*log(n)) - 0.5*(log(log(n))+log(4*pi))*(2*log(n))^(-1/2)
+bn <- (2*log(n))^(-1/2)
+db <- double(); n <- 10000
+for (i in 1:1000) db[i] <- (max(rnorm(n))-an)/bn
+plot(density(db),ylim=c(0,0.5))
+f<-function(x){exp(-x)*exp(-exp(-x))}
+curve(f,range(density(db)$x),add=TRUE,col = "blue")
+curve(dnorm,add=TRUE,col = "red")
+```
+  The blue line from extreme value is the same shape as the black line from density more than the red line from normal distribution.

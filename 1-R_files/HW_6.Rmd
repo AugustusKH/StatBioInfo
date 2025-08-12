@@ -1,0 +1,95 @@
+---
+title: "Home Work 6"
+author: "Pakorn Sagulkoo 6380064520"
+date: "22/10/2563"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise
+
+1. The dataset starbucks in the openintro package contains nutritional information on 77 Starbucks food items. Spend some time reading the help file of this dataset. For this problem, you will explore the relationship between the calories and carbohydrate grams in these items. 
+  1.1 Create a scatterplot of this data with calories on the xx-axis and carbohydrate grams on the yy-axis and describe the relationship you see. 
+  
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(openintro)
+data(starbucks)
+```
+  
+```{r}
+plot(starbucks$calories,starbucks$carb, xlab = "calories", ylab = "carbohydrate")
+```
+    From the scatterplot, it shows that there are many plots spreaded on the coordination. It is quit difficute to predict the trend of the data although it looks like direct variation among these data.
+    
+  1.2 In the scatterplot you made, what is the explanatory variable? What is the response variable? Why might you want to construct the problem in this way? 
+    Calories should be the response variable while carbohydrate grams should be the explanatory variable because in fact the consumption of carbohydrate gives the energy.
+    
+  1.3 Fit a simple linear regression to this data, with carbohydrate grams as the
+dependent variable and the calories as the explanatory variable. Use the lm() function.
+
+```{r}
+two_variables = data.frame(starbucks$calories,starbucks$carb)
+lin_fit = lm(starbucks$carb ~ starbucks$calories, two_variables)
+summary(lin_fit)
+```
+  1.4 Write the fitted model out using mathematical notation. Interpret the slope and
+the intercept parameters. 
+
+```{r}
+lin_fit
+```
+    The equation : carolies = (0.106 * carbohydrate) + 8.944
+    The slope is 0.106 while the y intercept is 8.944
+    
+  1.5 Find and interpret the value of R2 for this model.
+    The r square is 0.45, that means the data is moderately fit (not close to 0 or 1).
+    
+  1.6 Create a residual plot. The ggplot2 function fortify can help a lot with this. Describe what you see in the residual plot. Does the model look like a good fit? 
+
+```{r}
+library(ggplot2)
+ggplot(data = starbucks, aes(x = starbucks$calories, y = starbucks$carb)) +
+geom_point() + geom_smooth(method="lm", se=FALSE)
+```
+    From the ggplot, the model is not fit because the plots are diffuse from the line.
+    
+2. Load the kidiq data set from the class R package. This data set contains the iq scores for children and characteristics of the mothers. We will perform a multiple regression analysis on this data set with the kid_score column as the response variable and the other columns as potential explanatory variables. 
+
+```{r}
+iq <- read.table("http://faculty.smu.edu/kyler/courses/7312/kidiq.txt", header = TRUE)
+head(iq)
+```
+
+  2.1 Classify the statistical variable types for the explanatory variables (categorical,
+numeric, etc) 
+    - kid.score -> numeric
+    - mom.hs -> categorical
+    - mom.iq -> numeric
+    - mom.work -> categorical
+    - mom.age -> numeric
+    
+  2.2 Form a simple regression using the explanatory variable mom_iq? Interpret the results. How precise is the fit? how can we interpret the slope and intercept values? 
+  
+```{r}
+summary(lm(iq$kid.score ~ iq$mom.iq))
+```
+    The model has the intercept is 25.80 and slope is 0.61. However, the model is not fit because of the low r square (0.20).
+    
+  2.3 Form a simple regression with just the mom_hs variable as the explanatory variable. Interpret the slope and intercept in this case. Does this variable influence the value of the kid_score column? 
+  
+```{r}
+summary(lm(iq$kid.score ~ iq$mom.hs))
+```
+    The slope in this model is 11.77, the explanatory variable dramatically influences the kid iq score because the high value of slope (positive). However, the model is not also reliable due to the low r sqaure (0.05).
+    
+  2.4 Form a multiple regression using both the mom_iq and mom_hs columns as explanatory variables. Interpret the meaning of the slope and intercept in this case. How does this change the fit of our model? 
+  
+```{r}
+summary(lm(iq$kid.score ~ iq$mom.iq + iq$mom.hs))
+```
+    There are weak correlations in the model (r square is 0.21). The intercept is 25.73 while the slopes are 0.56 and 5.95 in mom.iq and mom.hs respectively. The mom.hs has an impact on the kid iq score more than mom.hs because mom.hs'slope is higher than mom.iq's.
+
+

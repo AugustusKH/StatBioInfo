@@ -1,0 +1,184 @@
+---
+title: "Brief Introduction into Using R"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercises
+
+1. Some questions to orientate yourself.
+  (a) Use the function class to find the class to which the following objects belong: **golub**, **golub[1,1]**, **golub.cl**, **golub.gnames**, **apply**, **exp**, **gol.fac**, **plot**, **ALL**.
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(multtest); data(golub)
+library(ALL); data(ALL)
+gol.fac <- factor(golub.cl, levels=0:1, labels = c("ALL","AML"))
+
+```
+
+```{r}
+class(golub)
+class(golub[1,1])
+class(golub.cl)
+class(golub.gnames)
+class(apply)
+class(exp)
+class(gol.fac)
+class(plot)
+class(ALL)
+```
+  (b) What is the meaning of the following abbreviations: rm, sum, prod,
+seq, sd, nrow.
+    - rm : remove objects from a specified environment
+    - sum : sum of vector elements
+    - prod : product of vector elements
+    - seq : generate regular sequences
+    - sd : standard deviation
+    - nrow : number of rows of an array
+  
+  (c) For what purpose are the following functions useful: grep, apply,
+gl, library, source, setwd, history, str.
+    - grep : pattern matching and replacement
+    - apply : apply functions over array margins
+    - gl : generate factor levels
+    - library : loading/attaching and listing of packages
+    - source : read R code from a file, a connection or expressions
+    - setwd : get or set working directory
+    - history :load or save or display the commands history
+    - str : compactly display the structure of an arbitrary R object
+
+2. gendat Consider the data in the matrix gendat, constructed in Section 1.6. Its small size has the advantage that you can check your
+computations even by a pocket calculator. ^14^
+  (a) Use apply to compute the standard deviation of the persons.
+  
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+gene1 <- c(1.00,1.50,1.25)
+gene2 <- c(1.35,1.55,1.00)
+gene3 <- c(-1.10,-1.50,-1.25)
+gene4 <- c(-1.20,-1.30,-1.00)
+rowcolnames <- list(c("gene1","gene2","gene3","gene4"),c("Eric","Peter","Anna"))
+gendat <- matrix(c(gene1,gene2,gene3,gene4), nrow=4, ncol=3,byrow=TRUE, dimnames = rowcolnames)
+```
+
+
+```{r}
+apply(gendat,2,sd)
+```
+
+  (b) Use apply to compute the standard deviation of the genes.
+```{r}
+apply(gendat,1,sd)
+```
+  (c) Order the matrix according to the gene standard deviations.
+```{r}
+sd_exprsval <- apply(gendat,1,sd)
+o <- order(sd_exprsval,decreasing=TRUE)
+o
+```
+  (d) Which gene has the largest standard deviation? : **gene2**
+  
+3. Computations on gene means of the Golub data.
+  (a) Use apply to compute the mean gene expression value.
+```{r}
+mean_exprsgngolub <- apply(golub,1,mean)
+
+```
+  (b) Order the data matrix according to the gene means.
+```{r}
+or <- order(mean_exprsgngolub,decreasing=TRUE)
+
+```
+  (c) Give the names of the three genes with the largest mean expression value.
+```{r}
+print(golub.gnames[or[1:3],3])
+```
+  (d) Give the biological names of these genes.
+```{r}
+print(golub.gnames[or[1:3],2])
+```
+4. Computations on gene standard deviations of the Golub data.
+  (a) Use apply to compute the standard deviation per gene.
+```{r}
+sd_exprsgngolub <- apply(golub,1,sd)
+
+```
+  (b) Select the expression values of the genes with standard deviation larger than 0.5.
+```{r}
+select_sd <- golub[sd_exprsgngolub > 0.5,]
+
+```
+  (c) How many genes have this property? : **1498 genes**
+```{r}
+dim(select_sd)
+```
+5. Oncogenes in Golub data.
+  (a) How many oncogenes are there in the dataset? Hint: Use grep.
+```{r}
+onco <- grep("oncogene",golub.gnames[,2])
+length(onco)
+```
+  (b) Find the biological names of the three oncogenes with the largest
+mean expression value for the ALL patients.
+```{r}
+oncogolub_gnames <- golub.gnames[onco,]
+onco_ALL <- golub[onco,gol.fac == "ALL"]
+oncoALL_mean <- apply(onco_ALL,1,mean)
+o_oncoALL <- order(oncoALL_mean, decreasing = TRUE)
+print(oncogolub_gnames[o_oncoALL[1:3],2])
+```
+  (c) Do the same for the AML patients.
+```{r}
+onco_AML <- golub[onco,gol.fac == "AML"]
+oncoAML_mean <- apply(onco_AML,1,mean)
+o_oncoAML <- order(oncoAML_mean, decreasing = TRUE)
+print(oncogolub_gnames[o_oncoAML[1:3],2])
+```
+  (d) Write the gene probe ID and the gene names of the ten genes with
+largest mean gene expression value to a csv flle.
+```{r}
+onco_value <- golub[onco,]
+onco_mean <- apply(onco_value,1,mean)
+order_oncomean <- order(onco_mean,decreasing = TRUE)
+top10_oncomean <- oncogolub_gnames[order_oncomean[1:10],c(1,3)]
+colnames(top10_oncomean) <- c("probe ID","gene name")
+write.csv(top10_oncomean,file="goluboutcsv")
+write.table(top10_oncomean,file="goluboutnorowname",row.names=FALSE)
+```
+
+6. Constructing a factor. Construct factors that correspond to the following setting.
+  (a) An experiment with two conditions each with four measurements.
+```{r}
+factor1 <- gl(2,4)
+factor1
+```
+  
+  (b) Five conditions each with three measurements.
+```{r}
+factor2 <- gl(5,3)
+factor2
+```
+  
+  (c) Three conditions each with flve measurements.
+```{r}
+factor3 <- gl(3,5)
+factor3
+```
+  
+7. Gene means for B1 patients. Load the ALL data from the ALL library and use str and openVignette() for a further orientation.
+  (a) Use exprs(ALL[,ALL$BT=="B1"] to extract the gene expressions from the patients in disease stage B1. Compute the mean gene expressions over these patients.
+```{r}
+library(ALL); data(ALL)
+mean_B1 <- apply(exprs(ALL[,ALL$BT=="B1"]),1,mean)
+```
+  
+  (b) Give the gene identiflers of the three genes with the largest mean.
+```{r}
+order_B1 <- order(mean_B1, decreasing = TRUE)
+top3_meanB1 <- mean_B1[order_B1[1:3]]
+top3_meanB1
+```
+  
+  

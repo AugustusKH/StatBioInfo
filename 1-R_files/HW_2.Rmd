@@ -1,0 +1,242 @@
+---
+title: "Data Display and Descriptive Statistics"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercises
+
+1. Illustration of mean and standard deviation.
+  (a) Compute the mean and the standard deviation for 1, 1.5, 2, 2.5, 3.
+  
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(multtest); data(golub)
+gol.fac <- factor(golub.cl, levels=0:1, labels = c("ALL","AML"))
+```
+  
+```{r}
+a <- c(1,1.5,2,2.5,3)
+mean(a)
+sd(a)
+```
+  (b) Compute the mean and the standard deviation for 1, 1.5, 2, 2.5, 30.
+  
+```{r}
+b <- c(1,1.5,2,2.5,30)
+mean(b)
+sd(b)
+```
+  (c) Comment on the difierences.
+        In comparison between data a and b, their first four values are same. However, the last value of them are absolutely different. The last value of data a is close to others but the last value of data b is extreme from other values in its dataset (30). As a result, the mean and standard deviation of data b is more than data a. This is example that mean and sd are not robust against outliers.
+        
+2. Comparing normality for two genes. Consider the gene expression values in row 790 and 66 of the Golub et al. (1999) data.
+  (a) Produce a boxplot for the expression values of the ALL patients and comment on the difierences. Are there outliers?
+  
+```{r}
+boxplot(golub[790,gol.fac=="ALL"], golub[66,gol.fac=="ALL"], xlab = " Gene row 790                                                 Gene row 66") 
+```
+    In comparison between gene expression value of row 790 and 66 in ALL patients reveals that row 66 has a gene expression higher than row 790. Moreover, interquatile range of row 66 is more than row 709. By the way, there are three outliers above upper line in row 790.
+  
+  (b) Produce a QQ-plot and formulate a hypothesis about the normality of the genes.
+
+```{r}
+qqnorm(golub[790, gol.fac=="ALL"], main = "Gene row 790 Q-Q Plot")
+qqline(golub[790, gol.fac=="ALL"])
+
+```
+    QQ plot of gene row 790 shows that there are three outliers above right upper region of the line. It means that the outliers locate in high value. The right-skewed distribution curve cannot be rule out. 
+
+```{r}
+qqnorm(golub[66, gol.fac=="ALL"], main = "Gene row 66 Q-Q Plot")
+qqline(golub[66, gol.fac=="ALL"])
+```
+    QQ plot of gene row 66 shows that no any outliers that detaches from the line. A normal distribution curve looks likely to be.
+    
+  (c) Compute the mean and the median for the expression values of the ALL patients and compare these. Do this for both genes.
+  
+```{r}
+mean(golub[790, gol.fac=="ALL"])
+median(golub[790, gol.fac=="ALL"])
+```
+```{r}
+mean(golub[66, gol.fac=="ALL"])
+median(golub[66, gol.fac=="ALL"])
+```
+    Mean and median of gene row 66 are higher than gene row 790. In gene row 790, mean is close to median and it has the same behaviour in gene row 66. In conclusion, both gene row 790 and 66 have a normal distribution curve.
+    
+3. Effect size. An important statistic to measure the effect size which is defined for a sample as x/s. It measures the mean relative to the standard deviation, so that is value is large when the mean is large and the standard deviation small.
+  (a) Determine the five genes with the largest effect size of the ALL patients from the Golub et al. (1999) data. Comment on their size.
+  
+```{r}
+effect_size <- function(x) mean(x)/sd(x)
+size <- apply(golub[,gol.fac=="ALL"],1,effect_size)
+o <- order(size, decreasing = TRUE)
+size[o[1:5]]
+print(golub.gnames[o[1:5],2])
+```
+    There are top 5 largest effect size of gene which use order function combined with function function.  
+  
+  (b) Invent a robust variant of the effect size (Median/MAD) and use it to answer the previous question.
+  
+```{r}
+robust_efsize <- function(x) median(x)/mad(x)
+robust_size <- apply(golub[,gol.fac=="ALL"],1,robust_efsize)
+robust_o <- order(robust_size, decreasing = TRUE)
+robust_size[robust_o[1:5]]
+print(golub.gnames[robust_o[1:5],2])
+```
+4. Plotting gene expressions "CCND3 Cyclin D3". Use the gene expressions from "CCND3 Cyclin D3" of Golub et al. (1999) collected in row 1042 of the object golub from the multtest library. After using the function plot you produce an object on which you can program.
+  (a) Produce a so-called stripchart for the gene expressions separately for the ALL as well as for the AML patients. Hint: Use a factor for appropriate separation.
+  
+```{r}
+gol.fac <- factor(golub.cl,levels=0:1, labels= c("ALL","AML"))
+stripchart(golub[1042,] ~ gol.fac, method="jitter")
+```
+  
+  (b) Rotate the plot to a vertical position and keep it that way for the questions to come.
+  
+```{r}
+stripchart(golub[1042,] ~ gol.fac, method="jitter", vertical = TRUE)
+```
+  
+  (c) Color the ALL expressions red and AML blue. Hint: Use the col parameter.
+  
+```{r}
+stripchart(golub[1042,] ~ gol.fac, method="jitter", vertical = TRUE, col = c("red","blue"))
+```
+  
+  (d) Add a title to the plot. Hint: Use title.
+  
+```{r}
+stripchart(golub[1042,] ~ gol.fac, method="jitter", vertical = TRUE, col = c("red","blue"))
+title("CCND3 Cyclin D3 gene expression in acute leukemia patients")
+```
+  
+  (e) Change the boxes into stars. Hint: Use the pch parameter. Hint: Store the final script you like the most in your typewriter in order to be able to use it efficiently later on.
+  
+```{r}
+stripchart(golub[1042,] ~ gol.fac, method="jitter", vertical = TRUE, col = c("red","blue"), pch = "*")
+title("CCND3 Cyclin D3 gene expression in acute leukemia patients")
+```
+5. Box-and-Whiskers plot of "CCND3 Cyclin D3". Use the gene expressions "CCND3 Cyclin D3" of Golub et al. (1999) from row 1042 of the object golub of the multtest library.
+  (a) Construct the boxplot in Figure 2.6.
+  
+```{r}
+boxplot(golub[1042,] ~ gol.fac)
+```
+  
+  (b) Add text to the plot to explain the meaning of the upper and lower part of the box.
+  
+```{r}
+boxplot(golub[1042,gol.fac == "ALL"],xlim=(c(0,4)))
+arrows(2.0,1.93,1.24,1.93);text(2.5,1.93,"Median")
+arrows(2.0,1.1,1.24,1.1) ;text(2.5,1.1,"Outlier")
+arrows(2.0,1.79,1.24,1.79);text(2.5,1.79,"first quartile")
+arrows(2.0,2.17,1.24,2.17);text(2.5,2.17,"third quartile")
+```
+  
+  (c) Do the same for the wiskers.
+  
+```{r}
+boxplot(golub[1042,gol.fac == "ALL"],xlim=(c(0,4)))
+arrows(2.0,1.93,1.24,1.93);text(2.5,1.93,"Median")
+arrows(2.0,1.1,1.24,1.1) ;text(2.5,1.1,"Outlier")
+arrows(2.0,1.79,1.24,1.79);text(2.5,1.79,"first quartile")
+arrows(2.0,2.17,1.24,2.17);text(2.5,2.17,"third quartile")
+arrows(2.0,1.27,1.24,1.27);text(2.5,1.27,"lower wisker")
+arrows(2.0,2.59,1.24,2.59);text(2.5,2.59,"upper wisker")
+```
+  
+  (d) Export your plot to eps format.
+  
+```{r}
+boxplot(golub[1042,gol.fac == "ALL"],xlim=(c(0,4)))
+arrows(2.0,1.93,1.24,1.93);text(2.5,1.93,"Median")
+arrows(2.0,1.1,1.24,1.1) ;text(2.5,1.1,"Outlier")
+arrows(2.0,1.79,1.24,1.79);text(2.5,1.79,"first quartile")
+arrows(2.0,2.17,1.24,2.17);text(2.5,2.17,"third quartile")
+arrows(2.0,1.27,1.24,1.27);text(2.5,1.27,"lower wisker")
+arrows(2.0,2.59,1.24,2.59);text(2.5,2.59,"upper wisker")
+dev.copy2eps(device=x11,file="BoxplotWithExplanation.eps")
+boxplot.stats(golub[1042,gol.fac=="ALL"], coef = 1.5, do.conf = TRUE, do.out = TRUE)
+```
+  
+  Hint 1: Use locator() to find coordinates of the position of the plot.
+  Hint 2: Use xlim to make the plot somewhat wider.
+  Hint 3: Use arrows to add an arrow.
+  Hint 4: Use text to add information at a certain position.
+  
+6. Box-and-wiskers plot of persons of Golub et al. (1999) data.
+  (a) Use boxplot(data.frame(golub)) to produce a box-and-wiskers plot for each column (person). Make a screen shot to save it in a word processor. Describe what you see. Are the medians of similar size? Is the inter quartile range more or less equal. Are there outliers?
+  
+```{r}
+boxplot(data.frame(golub))
+```
+    The figure shows box-and-wiskers plots of persons of Golub et al. (1999) data. There are 38 patients whose median, inter quatile range, and number of outliers are slightly different. The median and minimal number of all patients are nearly 0 and 1.6 respectively. However, the maximal values are various. there are many outliers estimate 2-10 above maximal values of all patients.   
+    
+  (b) Compute the mean and medians of the persons. What do you observe?
+  
+```{r}
+mean_person <- apply(golub,2,mean)
+median_person <- apply(golub,2,median)
+mean_person
+median_person
+```
+    The ranges of means are various value while the medians are close to 0 in all patients.
+    
+  (c) Compute the range (minimal and maximum value) of the standard deviations, the IQR and MAD of the persons. Comment of what you observe.
+  
+```{r}
+range(apply(golub,2,sd))
+range(apply(golub,2,IQR))
+range(apply(golub,2,mad))
+```
+    The SD, IQR, and MAD values are nearly equal (about 0.9 to 1.8).  
+    
+7. Oncogenes of Golub et al. (1999) data.
+  (a) Select the oncogenes by the grep facility and produce a box-and-wiskers plot of the gene expressions of the ALL patients.
+
+```{r}
+onco <- grep("oncogene",golub.gnames[,2])
+onco_all <- golub[onco,gol.fac=="ALL"]
+t_oncoALL <- t(onco_all)
+boxplot(data.frame(t_oncoALL))
+```
+  
+  (b) Do the same for the AML patients and use par(mfrow=c(2,1)) to combine the two plots such that the second is beneath the first. Are there genes with clear differences between the groups?
+  
+```{r}
+par(mfrow=c(2,1))
+boxplot(data.frame(t_oncoALL))
+title("ALL")
+onco2 <- grep("oncogene",golub.gnames[,2])
+onco_aml <- golub[onco2,]
+boxplot(data.frame(t(onco_aml[,gol.fac=="AML"])))
+title("AML")
+par(mfrow=c(1,1))
+```
+    The figure shows a box-and-wiskers plot of 42 oncogenes expression from ALL and AML patients. Overall, almost gene expression values of ALL patients are nearly equal to AML patients. 
+  
+  
+8. Descriptive statistics for the ALL gene expression values of the Golub et al. (1999) data.
+  (a) Compute the mean and median for gene expression values of the ALL patients, report their range and comment on it.
+  
+```{r}
+range(apply(golub[, gol.fac=="ALL"], 1, mean))
+range(apply(golub[, gol.fac=="ALL"], 1, median))
+```
+    There are wide ranges of both mean and median. However, the ranges of them look likely equal. As the result, the data could be normal distribution.
+  
+  (b) Compute the SD, IQR, and MAD for gene expression values of the ALL patients, report their range and comment on it.
+  
+```{r}
+IQR_cali <- function(x) IQR(x)/1.349
+range(apply(golub[, gol.fac=="ALL"], 1, sd))
+range(apply(golub[, gol.fac=="ALL"], 1, IQR_cali))
+range(apply(golub[, gol.fac=="ALL"], 1, mad))
+```
+    The range of sd is mildly less than the range of modified IQR and MAD. However, the values of three measures of spreading are almost equal. We can sum up that the data could be normal distributed pattern.
+    
